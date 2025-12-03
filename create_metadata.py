@@ -1,0 +1,72 @@
+import pandas as pd
+
+# Songs data [file name, title, genre]
+
+songs_data = [
+    # Pop songs
+    ["turkey time.mp3", "Turkey Time", "Pop"],
+    ["binary twilight.mp3", "Binary Twilight Original", "Pop"],
+    ["c side.mp3", "C-Side", "Pop"],
+    ["touch of your eyes.mp3", "Touch of your eyes", "Pop"],
+    ["i loved you.mp3", "I Loved You", "Pop"],
+    ["cent girl.mp3", "The cent girl", "Pop"],
+    ["city lights wanderer.mp3", "City lights wanderer", "Pop"],
+    ["funk is my essence.mp3", "Funk is my essence", "Pop"],
+    ["bask in the rhythm.mp3", "Bask in the rhythm", "Pop"],
+    ["ode to friendship.mp3", "Ode to friendship", "Pop"],
+    
+    # Hip Hop songs
+    ["megabyzos.mp3", "Megabyzos", "Hip Hop"],
+    ["boneyard bounce.mp3", "The Boneyard Bounce", "Hip Hop"],
+    ["set me free.mp3", "Set me free", "Hip Hop"],
+    ["turn it up.mp3", "yeah turn it up let it ride", "Hip Hop"],
+    ["avignon bridge.mp3", "Avignon bridge", "Hip Hop"],
+    ["giftin poster.mp3", "Giftin you a poster", "Hip Hop"],
+    ["concrete cathedral.mp3", "Concrete cathedral", "Hip Hop"],
+    ["voices jungle.mp3", "Voices in the concrete jungle", "Hip Hop"],
+    ["heart of matter.mp3", "Heart of the matter", "Hip Hop"],
+    ["elevated life.mp3", "Elevated life absent grief", "Hip Hop"],
+    
+    # Rock songs
+    ["fire in my veins.mp3", "Fire in My Veins", "Rock"],
+    ["wild hearts.mp3", "Wild hearts and open roads", "Rock"],
+    ["whispers echo.mp3", "Whispers in the echo", "Rock"],
+    ["murmurs reverb.mp3", "Murmurs in the reverberation", "Rock"],
+    ["fire and rain.mp3", "Fire and rain", "Rock"],
+    ["fight silence.mp3", "Fight the silence", "Rock"],
+    ["final girl.mp3", "final girl", "Rock"],
+    ["still choose you.mp3", "i still choose you", "Rock"],
+    ["falling stars.mp3", "Falling Stars", "Rock"],
+    ["rock wheels.mp3", "Rock wheels", "Rock"],
+    
+    # Country songs
+    ["galaxies banners.mp3", "Galaxies banners and dixie dignity", "Country"],
+    ["sail away.mp3", "Sail Away With Me", "Country"],
+    ["bourbon ballads.mp3", "Bourbon ballads", "Country"],
+    ["bourbon serenade.mp3", "Bourbon serenade for vanished affection", "Country"],
+    ["one more dance.mp3", "One more dance in this old town", "Country"],
+    ["honky tonk.mp3", "Honky tonk midnight", "Country"],
+    ["cowboys fear.mp3", "A Cowboy's Fear", "Country"],
+    ["always dreams.mp3", "Always In My Dreams", "Country"],
+    ["grapes of wrath.mp3", "The Grapes of Wrath", "Country"],
+    ["thank you jesus.mp3", "Thank You Jesus", "Country"],
+    
+    # Jazz songs
+    ["stream of being.mp3", "Stream of being", "Jazz"],
+    ["moonglow melody.mp3", "Moonglow melody", "Jazz"],
+    ["jazz soul freedom.mp3", "Jazz soul freedom", "Jazz"],
+    ["city broken dreams.mp3", "City of broken dreams", "Jazz"],
+    ["blues spirit liberation.mp3", "Blues spirit liberation", "Jazz"],
+    ["three little fishies.mp3", "Three Little Fishies", "Jazz"],
+    ["morning glow blues.mp3", "Morning glow blues", "Jazz"],
+    ["moonlight dance.mp3", "Moonlight dance", "Jazz"],
+    ["hey diddle diddle.mp3", "Hey Diddle Diddle", "Jazz"],
+    ["pancake buenos aires.mp3", "Pancake in Buenos Aires", "Jazz"],
+]
+
+# Create DataFrame
+df = pd.DataFrame(songs_data, columns=["filename", "title", "genre"])
+
+# Save to CSV
+df.to_csv("data/metadata.csv", index=False)
+print("metadata.csv created with 50 songs")

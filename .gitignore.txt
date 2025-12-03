@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.so
+.Python
+.pytest_cache/
+venv/
+env/
+.env
+*.egg-info/
+dist/
+build/
+
+# Jupyter/Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# Data files (keep audio files!)
+*.npy
+*.npz
+*.pkl
+*.pickle
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Logs
+logs/
+*.log
+
+# Outputs
+outputs/
+radar_charts/
