@@ -1,0 +1,9 @@
+streamlit==1.28.1
+librosa==0.10.1
+pandas==2.1.4
+numpy==1.24.3
+plotly==5.17.0
+scikit-learn==1.3.2
+matplotlib==3.8.0
+soundfile==0.12.1                 # Needed for MP3 loading
+python-dotenv==1.0.0              # Optional
