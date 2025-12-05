@@ -236,8 +236,7 @@ with col2:
                 if cols[2].button("Play", key=f"play_{song}"):
                     st.audio(song_path)
                 
-                if finder.check_mashup_compatibility(selected, song)['overall_compatible']:
-                    st.caption("DJ Compatible")
+                # DJ Compatible line removed here
                 
                 st.divider()
 

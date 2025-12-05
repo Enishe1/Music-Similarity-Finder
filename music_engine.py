@@ -105,24 +105,3 @@ class MusicSimilarityFinder:
             }
         return {}
     
-    def check_mashup_compatibility(self, song1, song2):
-        """Check if two songs could be mixed"""
-        if song1 not in self.song_names or song2 not in self.song_names:
-            return {'overall_compatible': False}
-        
-        idx1 = self.song_names.index(song1)
-        idx2 = self.song_names.index(song2)
-        
-        tempo1 = self.features_df.iloc[idx1]['tempo']
-        tempo2 = self.features_df.iloc[idx2]['tempo']
-        bpm_diff = abs(tempo1 - tempo2)
-        
-        similarity = self.similarity_matrix[idx1, idx2]
-        
-        return {
-            'bpm_ok': bpm_diff < 20,
-            'bpm_diff': bpm_diff,
-            'key_ok': similarity > 0.7,
-            'similarity': similarity,
-            'overall_compatible': bpm_diff < 20 and similarity > 0.7
-        }
