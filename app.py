@@ -4,7 +4,6 @@ import numpy as np
 import random
 import plotly.graph_objects as go
 from music_engine import MusicSimilarityFinder
-from visualize import RadarVisualizer
 
 # Initialize
 @st.cache_resource
@@ -14,7 +13,6 @@ def load_finder():
     return finder
 
 finder = load_finder()
-visualizer = RadarVisualizer(finder.features_df)
 
 # Debug test
 st.sidebar.markdown("##Debug Info")
@@ -108,10 +106,6 @@ with col1:
             if not found:
                 mapped_features[target_feature] = 0.5
         
-        # ---------DEBUG--------
-        st.sidebar.write("=== RADAR DATA ===")
-        st.sidebar.write("Mapped features:", mapped_features)
-        
         # Create Musical DNA display
         st.markdown("### Musical DNA")
         
@@ -173,9 +167,7 @@ with col1:
         """
         st.markdown(dna_html, unsafe_allow_html=True)
         
-        st.write("**Mapped Features for Radar:**", mapped_features)
-        
-        # RADAR CHART SEPARATE FROM VISUALIZER (so they're different for each song = error fixed)
+        # Create radar chart
         categories = ['tempo', 'energy', 'danceability', 'brightness', 'complexity']
         radar_values = []
         
