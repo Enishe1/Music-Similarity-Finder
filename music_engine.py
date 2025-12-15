@@ -20,10 +20,16 @@ class MusicSimilarityFinder:
     def _extract_features(self, audio_path):
         """Extract audio features from MP3 file"""
         try:
-            y, sr = librosa.load(audio_path, duration=30)
+            y, sr = librosa.load(audio_path)  
+            
+            tempo_result = librosa.beat.beat_track(y=y, sr=sr)
+            if isinstance(tempo_result[0], (np.ndarray, list)):
+                tempo = float(tempo_result[0][0])
+            else:
+                tempo = float(tempo_result[0])
             
             features = {
-                'tempo': float(librosa.beat.beat_track(y=y, sr=sr)[0]),  # Ensure float
+                'tempo': tempo,
                 'spectral_centroid': float(np.mean(librosa.feature.spectral_centroid(y=y, sr=sr))),
                 'zero_crossing_rate': float(np.mean(librosa.feature.zero_crossing_rate(y))),
                 'rmse': float(np.mean(librosa.feature.rms(y=y))),
@@ -36,6 +42,7 @@ class MusicSimilarityFinder:
                 features[f'mfcc_{i}_std'] = float(np.std(mfccs[i]))
             
             return features
+            
         except Exception as e:
             print(f"Error processing {audio_path}: {e}")
             return None
