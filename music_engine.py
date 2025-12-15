@@ -23,17 +23,17 @@ class MusicSimilarityFinder:
             y, sr = librosa.load(audio_path, duration=30)
             
             features = {
-                'tempo': librosa.beat.beat_track(y=y, sr=sr)[0],
-                'spectral_centroid': np.mean(librosa.feature.spectral_centroid(y=y, sr=sr)),
-                'zero_crossing_rate': np.mean(librosa.feature.zero_crossing_rate(y)),
-                'rmse': np.mean(librosa.feature.rms(y=y)),
+                'tempo': float(librosa.beat.beat_track(y=y, sr=sr)[0]),  # Ensure float
+                'spectral_centroid': float(np.mean(librosa.feature.spectral_centroid(y=y, sr=sr))),
+                'zero_crossing_rate': float(np.mean(librosa.feature.zero_crossing_rate(y))),
+                'rmse': float(np.mean(librosa.feature.rms(y=y))),
             }
             
             # MFCC features
             mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
             for i in range(13):
-                features[f'mfcc_{i}_mean'] = np.mean(mfccs[i])
-                features[f'mfcc_{i}_std'] = np.std(mfccs[i])
+                features[f'mfcc_{i}_mean'] = float(np.mean(mfccs[i]))
+                features[f'mfcc_{i}_std'] = float(np.std(mfccs[i]))
             
             return features
         except Exception as e:
@@ -52,7 +52,18 @@ class MusicSimilarityFinder:
                 features['song_name'] = file.stem
                 features_list.append(features)
         
-        return pd.DataFrame(features_list)
+        df = pd.DataFrame(features_list)
+        
+        # Ensure all numeric columns are actually numeric
+        numeric_cols = [c for c in df.columns if c not in ['filename', 'song_name']]
+        for col in numeric_cols:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+        
+        # Fill any NaN values with column mean
+        for col in numeric_cols:
+            df[col] = df[col].fillna(df[col].mean())
+        
+        return df
     
     def _build_similarity_matrix(self):
         """Build similarity matrix from features"""
@@ -77,31 +88,59 @@ class MusicSimilarityFinder:
         similarities = self.similarity_matrix[idx].copy()
         
         # Apply adjustments if provided
-        if adjustments and len(adjustments) == 2:
-            energy_adj, dance_adj = adjustments
-            # Simple adjustment: modify similarity scores
-         
+        if adjustments:
+            if len(adjustments) == 2:
+                energy_adj, dance_adj = adjustments
+                tempo_adj = 0
+            elif len(adjustments) == 3:
+                energy_adj, dance_adj, tempo_adj = adjustments
+            else:
+                energy_adj = dance_adj = tempo_adj = 0
+            
+            # Convert features to numpy arrays of floats
+            energy_feat = self.features_df['spectral_centroid'].to_numpy(dtype=float)
+            dance_feat = self.features_df['zero_crossing_rate'].to_numpy(dtype=float)
+            tempo_feat = self.features_df['tempo'].to_numpy(dtype=float)
+            
+            # Energy adjustment
             if energy_adj != 0:
-                energy_feat = self.features_df['spectral_centroid'].values
-                energy_norm = (energy_feat - np.min(energy_feat)) / (np.max(energy_feat) - np.min(energy_feat))
-                similarities += energy_adj * energy_norm * 0.2
+                energy_min = np.min(energy_feat)
+                energy_max = np.max(energy_feat)
+                if energy_max > energy_min:
+                    energy_norm = (energy_feat - energy_min) / (energy_max - energy_min)
+                    similarities += energy_adj * energy_norm * 0.1
+            
+            # Danceability adjustment 
+            if dance_adj != 0:
+                dance_min = np.min(dance_feat)
+                dance_max = np.max(dance_feat)
+                if dance_max > dance_min:
+                    dance_norm = (dance_feat - dance_min) / (dance_max - dance_min)
+                    similarities += dance_adj * (1 - dance_norm) * 0.1
+            
+            # Tempo adjustment 
+            if tempo_adj != 0:
+                tempo_min = np.min(tempo_feat)
+                tempo_max = np.max(tempo_feat)
+                if tempo_max > tempo_min:
+                    tempo_norm = (tempo_feat - tempo_min) / (tempo_max - tempo_min)
+                    similarities += tempo_adj * tempo_norm * 0.1
         
-        # Sort by similarity
+        # Sort by similarity (exclude current song)
         sorted_indices = np.argsort(similarities)[::-1]
         sorted_indices = [i for i in sorted_indices if i != idx][:n]
         
-        return {self.song_names[i]: similarities[i] for i in sorted_indices}
+        return {self.song_names[i]: float(similarities[i]) for i in sorted_indices}
     
     def get_features(self, song_name):
         """Get feature vector for radar chart"""
         if song_name in self.song_names:
             idx = self.song_names.index(song_name)
             return {
-                'tempo': self.features_df.iloc[idx]['tempo'],
-                'energy': self.features_df.iloc[idx]['spectral_centroid'],
-                'danceability': 1 - self.features_df.iloc[idx]['zero_crossing_rate'] / 0.1,
-                'brightness': self.features_df.iloc[idx]['mfcc_1_mean'],
-                'complexity': self.features_df.iloc[idx]['mfcc_12_std']
+                'tempo': float(self.features_df.iloc[idx]['tempo']),
+                'energy': float(self.features_df.iloc[idx]['spectral_centroid']),
+                'danceability': float(1 - self.features_df.iloc[idx]['zero_crossing_rate'] / 0.1),
+                'brightness': float(self.features_df.iloc[idx]['mfcc_1_mean']),
+                'complexity': float(self.features_df.iloc[idx]['mfcc_12_std'])
             }
         return {}
-    

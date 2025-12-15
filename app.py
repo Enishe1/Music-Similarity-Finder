@@ -15,7 +15,7 @@ def load_finder():
 finder = load_finder()
 
 # Debug test
-st.sidebar.markdown("##Debug Info")
+st.sidebar.markdown("## Debug Info")
 st.sidebar.write(f"Songs loaded: {len(finder.song_names)}")
 if hasattr(finder, 'features_df'):
     st.sidebar.write(f"Features shape: {finder.features_df.shape}")
@@ -64,6 +64,13 @@ if selected:
 st.sidebar.header("Adjust Preferences")
 energy = st.sidebar.slider("Energy", -1.0, 1.0, 0.0, 0.1)
 dance = st.sidebar.slider("Danceability", -1.0, 1.0, 0.0, 0.1)
+tempo = st.sidebar.slider("Tempo", -1.0, 1.0, 0.0, 0.1)
+
+# Show active adjustments
+st.sidebar.markdown("### Active Adjustments")
+st.sidebar.markdown(f"- **Energy:** `{energy:.1f}`")
+st.sidebar.markdown(f"- **Danceability:** `{dance:.1f}`")
+st.sidebar.markdown(f"- **Tempo:** `{tempo:.1f}`")
 
 # Main columns
 col1, col2 = st.columns([1, 1])
@@ -111,15 +118,15 @@ with col1:
         
         def map_to_display(value, value_type):
             if value_type == "tempo":
-                if value > 140: return "on"
-                elif value > 120: return "fast"
-                elif value > 100: return "medium"
-                elif value > 80: return "slow"
-                else: return "off"
+                if value > 140: return "Fast+"
+                elif value > 120: return "Fast"
+                elif value > 100: return "Medium"
+                elif value > 80: return "Slow"
+                else: return "Very Slow"
             else:
-                if value > 0.7: return "high"
-                elif value > 0.4: return "medium"
-                else: return "low"
+                if value > 0.7: return "High"
+                elif value > 0.4: return "Medium"
+                else: return "Low"
         
         # Create normalized values for display
         normalized = {}
@@ -139,28 +146,28 @@ with col1:
         
         dna_html = f"""
         <div style="font-family: monospace; background: #f5f5f5; padding: 15px; border-radius: 8px;">
-            <div style="display: flex; justify-content: space-between;">
-                <span>tempo</span>
-                <span style="font-weight: bold;">{map_to_display(mapped_features.get('tempo', 100), "tempo")}</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span>Tempo</span>
+                <span style="font-weight: bold; color: #1f77b4;">{map_to_display(mapped_features.get('tempo', 100), "tempo")}</span>
             </div>
-            <div style="display: flex; justify-content: space-between;">
-                <span>complexity</span>
-                <span style="font-weight: bold;">{map_to_display(normalized.get('complexity', 0.5), "complexity")}</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span>Complexity</span>
+                <span style="font-weight: bold; color: #1f77b4;">{map_to_display(normalized.get('complexity', 0.5), "complexity")}</span>
             </div>
-            <div style="display: flex; justify-content: space-between;">
-                <span>brightness</span>
-                <span style="font-weight: bold;">{map_to_display(normalized.get('brightness', 0.5), "brightness")}</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span>Brightness</span>
+                <span style="font-weight: bold; color: #1f77b4;">{map_to_display(normalized.get('brightness', 0.5), "brightness")}</span>
             </div>
-            <div style="display: flex; justify-content: space-between;">
-                <span>danceability</span>
-                <span style="font-weight: bold;">{map_to_display(normalized.get('danceability', 0.5), "danceability")}</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span>Danceability</span>
+                <span style="font-weight: bold; color: #1f77b4;">{map_to_display(normalized.get('danceability', 0.5), "danceability")}</span>
             </div>
-            <div style="display: flex; justify-content: space-between;">
-                <span>energy</span>
-                <span style="font-weight: bold;">{map_to_display(normalized.get('energy', 0.5), "energy")}</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span>Energy</span>
+                <span style="font-weight: bold; color: #1f77b4;">{map_to_display(normalized.get('energy', 0.5), "energy")}</span>
             </div>
             <hr>
-            <div style="text-align: center; font-size: 1.2em;">
+            <div style="text-align: center; font-size: 1.2em; font-weight: bold; color: #333;">
                 {selected.replace('.mp3', '').replace('_', ' ')}
             </div>
         </div>
@@ -220,12 +227,14 @@ with col1:
 with col2:
     st.header("Similar Songs")
     
-    similar = finder.recommend(selected, adjustments=[energy, dance])
+    # Get recommendations with tempo adjustment
+    similar = finder.recommend(selected, adjustments=[energy, dance, tempo])
     
     if not similar:
         st.info("No similar songs found")
     else:
         st.success(f"Found {len(similar)} similar songs")
+        
         for i, (song, score) in enumerate(similar.items(), 1):
             with st.container():
                 cols = st.columns([4, 1, 1])
@@ -235,8 +244,6 @@ with col2:
                 song_path = f"data/audio/{song}.mp3"
                 if cols[2].button("Play", key=f"play_{song}"):
                     st.audio(song_path)
-                
-                # DJ Compatible line removed here
                 
                 st.divider()
 
