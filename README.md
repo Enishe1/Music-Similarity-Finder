@@ -1,6 +1,6 @@
-# Music Discovery Radar
+# Music Similarity Finder
 
-Music Discovery Radar is a Streamlit-powered music similarity app that analyzes audio features and visualizes a song’s Musical DNA using radar charts.
+Music Similarity Finder is a Streamlit-powered music similarity app that analyzes audio features and visualizes a song’s Musical DNA using radar charts.
 
 Built on a dataset of 50 AI-generated songs, this app extracts audio features from MP3 files, computes similarity between tracks, and lets users interactively explore music based on energy, danceability and tempo preferences.
 
